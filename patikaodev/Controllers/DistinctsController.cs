@@ -93,23 +93,25 @@ namespace patikaodev.Controllers
 
         // GET: api/Distincts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Distinct>> GetDistinct(int id)
+        public async Task<ActionResult<DistinctDto>> GetDistinct(int id)
         {
-            var distinct = await _context.Distinct.FindAsync(id);
+            var distinct = await _context.Distinct.Where(d => d.Id==id).Include(c => c.city).FirstOrDefaultAsync();
+
 
             if (distinct == null)
             {
                 return NotFound();
             }
 
-            return distinct;
+            return _mapper.Map<Distinct,DistinctDto>(distinct);
         }
 
         // PUT: api/Distincts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDistinct(int id, Distinct distinct)
+        public async Task<IActionResult> PutDistinct(int id, DistinctDto distinctDto)
         {
+            Distinct distinct= _mapper.Map<DistinctDto,Distinct>(distinctDto);
             if (id != distinct.Id)
             {
                 return BadRequest();
@@ -139,12 +141,13 @@ namespace patikaodev.Controllers
         // POST: api/Distincts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Distinct>> PostDistinct(Distinct distinct)
+        public async Task<ActionResult<DistinctDto>> PostDistinct(DistinctDto distinctDto)
         {
+            Distinct distinct = _mapper.Map<DistinctDto, Distinct>(distinctDto);
             _context.Distinct.Add(distinct);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDistinct", new { id = distinct.Id }, distinct);
+            return CreatedAtAction("GetDistinct", new { id = distinct.Id }, distinctDto);
         }
 
         // DELETE: api/Distincts/5

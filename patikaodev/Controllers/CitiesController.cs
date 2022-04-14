@@ -85,7 +85,8 @@ namespace patikaodev.Controllers
 
         // GET: api/Cities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<City>> GetCity(long id)
+        public async Task<ActionResult<CityDto>> GetCity(long id)
+
         {
             var city = await _context.City.FindAsync(id);
 
@@ -94,13 +95,14 @@ namespace patikaodev.Controllers
                 return NotFound();
             }
 
-            return city;
+            return _mapper.Map<City,CityDto>(city);
         }
 
         // PUT: api/Cities/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCity(long id, City city)
+        public async Task<IActionResult> PutCity(long id, CityDto cityDto)
         {
+            City city = _mapper.Map<CityDto,City>(cityDto);
             if (id != city.id)
             {
                 return BadRequest();
@@ -129,12 +131,13 @@ namespace patikaodev.Controllers
 
         // POST: api/Cities
         [HttpPost]
-        public async Task<ActionResult<City>> PostCity(City city)
+        public async Task<ActionResult<CityDto>> PostCity(CityDto cityDto)
         {
+            City city = _mapper.Map<CityDto, City>(cityDto);
             _context.City.Add(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCity", new { id = city.id }, city);
+            return CreatedAtAction("GetCity", new { id = city.id }, cityDto);
         }
 
         // DELETE: api/Cities/5
